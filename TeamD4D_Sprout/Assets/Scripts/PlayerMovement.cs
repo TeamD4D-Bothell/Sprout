@@ -6,25 +6,72 @@ public class PlayerMovement : MonoBehaviour {
 	public string horizInputString = "Horizontal";
 	public string jumpKey = "Jump";
 	public float speed = 5f;
-	public float jumpHeight = 4f;
+	public float maxJumpHeight = 4f;
 
 	private Rigidbody2D rb2D;
+	private GroundChecker groundChecker;
 
-	// Use this for initialization
-	void Start () {
+	public string animStateKey, animWalkSpeedKey, animDirectionKey;
+	private int animState, animWalkSpeed, animDirection;
+	private Animator animator;
+	
+	/****************************************************************************/
+
+	void Awake () {
 		rb2D = GetComponent<Rigidbody2D>();
+		groundChecker = GetComponentInChildren<GroundChecker>();
+		animator = GetComponent<Animator>();
+		animState = Animator.StringToHash(animStateKey);
+		animWalkSpeed = Animator.StringToHash(animWalkSpeedKey);
+		animDirection = Animator.StringToHash(animDirectionKey);
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		float inputVal = Input.GetAxis(horizInputString);
-		if (inputVal != 0) {
-			transform.Translate(Vector3.right * speed * Time.deltaTime * inputVal, 
+		
+		Move(inputVal);
+
+		if (Input.GetButtonDown(jumpKey) && groundChecker.isGrounded) {
+			Jump(maxJumpHeight);
+		}
+	}
+
+	/****************************************************************************/
+
+	
+	public void Move(float input) {
+		if (input != 0) {
+			SetAnimationState(1);
+			SetWalkSpeed(Mathf.Abs(input));
+			if (input > 0) {
+				SetAnimationDirection(true);
+				transform.localScale = new Vector3(-1f, transform.localScale.y, transform.localScale.z);
+			}
+			else if (input < 0) {
+				SetAnimationDirection(false);
+				transform.localScale = new Vector3(1f, transform.localScale.y, transform.localScale.z);
+			}
+
+			transform.Translate(Vector3.right * speed * Time.deltaTime * input,
 								Space.World);
 		}
+		else
+			SetAnimationState(0);
+	}
 
-		if (Input.GetButtonDown(jumpKey)) {
-			rb2D.AddForce(Vector3.up * jumpHeight, ForceMode2D.Impulse);
-		}
+	public void Jump(float scale) {
+		rb2D.AddForce(Vector3.up * scale, ForceMode2D.Impulse);
+	}
+
+	public void SetAnimationState(int state) {
+		animator.SetInteger(animState, state);
+	}
+
+	public void SetWalkSpeed(float speed) {
+		animator.SetFloat(animWalkSpeed, speed);
+	}
+
+	public void SetAnimationDirection(bool direction) {
+		animator.SetBool(animDirection, direction);
 	}
 }
