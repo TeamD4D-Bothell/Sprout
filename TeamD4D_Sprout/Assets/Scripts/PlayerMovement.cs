@@ -29,7 +29,8 @@ public class PlayerMovement : MonoBehaviour {
 	void Update () {
 		float inputVal = Input.GetAxis(horizInputString);
 		
-		Move(inputVal);
+		if (groundChecker.isGrounded)
+			Move(inputVal);
 
 		if (Input.GetButtonDown(jumpKey) && groundChecker.isGrounded) {
 			Jump(maxJumpHeight);
@@ -52,8 +53,7 @@ public class PlayerMovement : MonoBehaviour {
 				transform.localScale = new Vector3(1f, transform.localScale.y, transform.localScale.z);
 			}
 
-			transform.Translate(Vector3.right * speed * Time.deltaTime * input,
-								Space.World);
+			rb2D.velocity = (Vector3.right * speed * Time.deltaTime * input);
 		}
 		else
 			SetAnimationState(0);
