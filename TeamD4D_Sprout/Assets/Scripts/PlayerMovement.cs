@@ -1,77 +1,81 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour {
 
-	public string horizInputString = "Horizontal";
-	public string jumpKey = "Jump";
-	public float speed = 5f;
-	public float maxJumpHeight = 4f;
+	public float jumpHeight = 5;
+	public float moveSpeed = 5;
+	public float maxClimbAngle = 60f;
 
-	private Rigidbody2D rb2D;
-	private GroundChecker groundChecker;
+	private Rigidbody2D rb;
+	private BoxCollider2D boxCollider;
 
-	public string animStateKey, animWalkSpeedKey, animDirectionKey;
-	private int animState, animWalkSpeed, animDirection;
-	private Animator animator;
-	
-	/****************************************************************************/
+	public float raycastSkin = 0.12f;
+	public float raycastLength = 0.15f;
+	LayerMask layerToIgnore;
+	private Vector2 raycastOrigin;
+	private bool grounded = false;
 
-	void Awake () {
-		rb2D = GetComponent<Rigidbody2D>();
-		groundChecker = GetComponentInChildren<GroundChecker>();
-		animator = GetComponent<Animator>();
-		animState = Animator.StringToHash(animStateKey);
-		animWalkSpeed = Animator.StringToHash(animWalkSpeedKey);
-		animDirection = Animator.StringToHash(animDirectionKey);
+	public bool isGrounded { get { return grounded; } }
+
+	/***************************************************/
+
+	void Awake() {
+		// Initialize necessary components
+		rb = GetComponent<Rigidbody2D>();
+		boxCollider = GetComponent<BoxCollider2D>();
+		layerToIgnore = LayerMask.GetMask("Environment");
+		UpdateRaycastOrigin();
 	}
 	
-	void Update () {
-		float inputVal = Input.GetAxis(horizInputString);
-		
-		if (groundChecker.isGrounded)
-			Move(inputVal);
+	void FixedUpdate() {
+		// Get input
+		float hVal = Input.GetAxis("Horizontal");
+		Move(hVal);
+	}
 
-		if (Input.GetButtonDown(jumpKey) && groundChecker.isGrounded) {
-			Jump(maxJumpHeight);
+	void Update() {
+		bool jumping = Input.GetButtonDown("Jump");
+
+		if (jumping && grounded) {
+			Debug.Log("Jumping");
+			rb.velocity = new Vector2(rb.velocity.x, 0);
+			rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
 		}
 	}
 
-	/****************************************************************************/
+	void Move(float input) {
+		// Adjust for slope angle
+		UpdateRaycastOrigin();
+		RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down, raycastLength, layerToIgnore);
 
-	
-	public void Move(float input) {
-		if (input != 0) {
-			SetAnimationState(1);
-			SetWalkSpeed(Mathf.Abs(input));
-			if (input > 0) {
-				SetAnimationDirection(true);
-				transform.localScale = new Vector3(-1f, transform.localScale.y, transform.localScale.z);
-			}
-			else if (input < 0) {
-				SetAnimationDirection(false);
-				transform.localScale = new Vector3(1f, transform.localScale.y, transform.localScale.z);
-			}
+		if (hit) {
+			// Move
+			grounded = true;
+			var slopeRatio = CalculateSlopeRatio(hit.normal);
+			float scaledInput = input * moveSpeed * slopeRatio;
 
-			rb2D.velocity = (Vector3.right * speed * Time.deltaTime * input);
+			rb.velocity = new Vector2(scaledInput, rb.velocity.y);
 		}
-		else
-			SetAnimationState(0);
+		else {
+			grounded = false;
+		}
 	}
 
-	public void Jump(float scale) {
-		rb2D.AddForce(Vector3.up * scale, ForceMode2D.Impulse);
+	void UpdateRaycastOrigin() {
+		raycastOrigin = new Vector2((boxCollider.bounds.min.x + boxCollider.bounds.max.x) / 2,
+									boxCollider.bounds.min.y - raycastSkin);
 	}
 
-	public void SetAnimationState(int state) {
-		animator.SetInteger(animState, state);
+	// Might not need this, but keeping it regardless.
+	Vector2 CalculateTangentNormal(Vector2 normal, float input) {
+		return Vector3.Normalize(input * (Vector3.Cross(normal, Vector3.forward)));
 	}
 
-	public void SetWalkSpeed(float speed) {
-		animator.SetFloat(animWalkSpeed, speed);
-	}
-
-	public void SetAnimationDirection(bool direction) {
-		animator.SetBool(animDirection, direction);
+	float CalculateSlopeRatio(Vector2 normal) {
+		float adjustedAngle = 90 - (Vector2.Angle(Vector2.up, normal));
+		return  adjustedAngle / 90f;
 	}
 }
