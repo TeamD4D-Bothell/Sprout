@@ -29,11 +29,11 @@ public class PlayerAnimation : MonoBehaviour {
 	}
 
 	void Update() {
-		Debug.Log(playerMovement.isGrounded);
+		float input = Input.GetAxis("Horizontal");
 		if (playerMovement.isGrounded) {
-			if (rb.velocity.x != 0f) {
+			if (input != 0f) {
 				SetState(1);
-				SetDirection();
+				SetDirection(input);
 				SetWalkSpeed();
 			}
 			else {
@@ -53,12 +53,12 @@ public class PlayerAnimation : MonoBehaviour {
 		animator.SetFloat(AnimWalkSpeedKey, rb.velocity.x);
 	}
 
-	private void SetDirection() {
-		if (rb.velocity.x > 0) {
+	private void SetDirection(float input) {
+		if (input > 0) {
 			animator.SetBool(AnimFaceRightKey, true);
 			transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
 		}
-		else if (rb.velocity.x < 0) {
+		else if (input < 0) {
 			animator.SetBool(AnimFaceRightKey, false);
 			transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
 		}
