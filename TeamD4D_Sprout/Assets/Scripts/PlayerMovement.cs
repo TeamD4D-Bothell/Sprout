@@ -5,20 +5,25 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour {
 
-	public float jumpHeight = 5;
-	public float moveSpeed = 5;
+	public float jumpHeight = 5f;
+	public float moveSpeed = 5f;
 	public float maxClimbAngle = 60f;
+	public float climbSpeed = 3f;
 
 	private Rigidbody2D rb;
 	private BoxCollider2D boxCollider;
+
+	private float slopeRatio = 1f;
 
 	public float raycastSkin = 0.12f;
 	public float raycastLength = 0.15f;
 	LayerMask layerToIgnore;
 	private Vector2 raycastOrigin;
 	private bool grounded = false;
+	private bool canClimb = false;
 
 	public bool isGrounded { get { return grounded; } }
+	public bool isClimbing { get { return canClimb; } }
 
 	/***************************************************/
 
@@ -33,35 +38,42 @@ public class PlayerMovement : MonoBehaviour {
 	void FixedUpdate() {
 		// Get input
 		float hVal = Input.GetAxis("Horizontal");
-		Move(hVal);
+		CheckGrounded();
+
+		if (grounded || canClimb) {
+			Move(hVal);
+		}
+
+		if (canClimb && rb.velocity.y <= climbSpeed) {
+			Climb();
+		}
 	}
 
 	void Update() {
 		bool jumping = Input.GetButtonDown("Jump");
 
-		if (jumping && grounded) {
-			Debug.Log("Jumping");
-			rb.velocity = new Vector2(rb.velocity.x, 0);
-			rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
+		if (jumping && (grounded || canClimb)) {
+			Jump();
 		}
 	}
 
-	void Move(float input) {
+	/***************************************************/
+
+	void CheckGrounded() {
 		// Adjust for slope angle
 		UpdateRaycastOrigin();
 		RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down, raycastLength, layerToIgnore);
 
 		if (hit) {
-			// Move
 			grounded = true;
-			var slopeRatio = CalculateSlopeRatio(hit.normal);
-			float scaledInput = input * moveSpeed * slopeRatio;
+			slopeRatio = CalculateSlopeRatio(hit.normal);
+		}
+		else grounded = false;
+	}
 
-			rb.velocity = new Vector2(scaledInput, rb.velocity.y);
-		}
-		else {
-			grounded = false;
-		}
+	void Move(float input) {
+		float scaledInput = input * moveSpeed * slopeRatio;
+		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
 	}
 
 	void UpdateRaycastOrigin() {
@@ -77,5 +89,36 @@ public class PlayerMovement : MonoBehaviour {
 	float CalculateSlopeRatio(Vector2 normal) {
 		float adjustedAngle = 90 - (Vector2.Angle(Vector2.up, normal));
 		return  adjustedAngle / 90f;
+	}
+
+	void OnTriggerEnter2D(Collider2D other) {
+		if (other.tag == "Climbable") {
+			canClimb = true;
+
+		}
+	}
+
+	void OnTriggerExit2D(Collider2D other) {
+		if (other.tag == "Climbable") {
+			canClimb = false;
+		}
+	}
+
+	void Jump() {
+		rb.velocity = new Vector2(rb.velocity.x, 0);
+		rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
+	}
+
+	void Climb() {
+		var input = Input.GetAxis("Vertical");
+
+		if (rb.velocity.y < 0) {
+			rb.velocity = new Vector2(rb.velocity.x, 0);
+		}
+
+		if (input != 0) {
+			float scaledInput = input * climbSpeed;
+			rb.velocity = new Vector2(rb.velocity.x, scaledInput);
+		}
 	}
 }

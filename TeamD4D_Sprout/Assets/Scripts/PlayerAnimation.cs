@@ -12,11 +12,13 @@ public class PlayerAnimation : MonoBehaviour {
 
 	public string AnimStateParam = "State", 
 		AnimWalkSpeedParam = "WalkSpeed", 
-		AnimFaceRightParam = "FaceRight";
+		AnimFaceRightParam = "FaceRight",
+		AnimYVelocityParam = "YVelocity";
 
 	private int AnimStateKey, 
 		AnimWalkSpeedKey, 
-		AnimFaceRightKey;
+		AnimFaceRightKey,
+		AnimYVelocityKey;
 
 	void Awake() {
 		animator = GetComponent<Animator>();
@@ -26,6 +28,7 @@ public class PlayerAnimation : MonoBehaviour {
 		AnimStateKey = Animator.StringToHash(AnimStateParam);
 		AnimWalkSpeedKey = Animator.StringToHash(AnimWalkSpeedParam);
 		AnimFaceRightKey = Animator.StringToHash(AnimFaceRightParam);
+		AnimYVelocityKey = Animator.StringToHash(AnimYVelocityParam);
 	}
 
 	void Update() {
@@ -42,6 +45,7 @@ public class PlayerAnimation : MonoBehaviour {
 		}
 		else {
 			SetState(2);
+			SetYVelocity(rb.velocity.y);
 		}
 	}
 
@@ -62,5 +66,9 @@ public class PlayerAnimation : MonoBehaviour {
 			animator.SetBool(AnimFaceRightKey, false);
 			transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
 		}
+	}
+
+	private void SetYVelocity(float velocity) {
+		animator.SetFloat(AnimYVelocityKey, velocity);
 	}
 }
