@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour {
+	
+	public LayerMask walkableLayers;
 
 	public float jumpHeight = 5f;
 	public float moveSpeed = 5f;
@@ -17,7 +19,6 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float raycastSkin = 0.12f;
 	public float raycastLength = 0.15f;
-	LayerMask layerToIgnore;
 	private Vector2 raycastOrigin;
 	private bool grounded = false;
 	private bool canClimb = false;
@@ -31,7 +32,7 @@ public class PlayerMovement : MonoBehaviour {
 		// Initialize necessary components
 		rb = GetComponent<Rigidbody2D>();
 		boxCollider = GetComponent<BoxCollider2D>();
-		layerToIgnore = LayerMask.GetMask("Environment");
+		walkableLayers += LayerMask.GetMask("Environment", "WorldObject");
 		UpdateRaycastOrigin();
 	}
 	
@@ -62,7 +63,7 @@ public class PlayerMovement : MonoBehaviour {
 	void CheckGrounded() {
 		// Adjust for slope angle
 		UpdateRaycastOrigin();
-		RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down, raycastLength, layerToIgnore);
+		RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down, raycastLength, walkableLayers);
 
 		if (hit) {
 			grounded = true;
@@ -94,7 +95,7 @@ public class PlayerMovement : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.tag == "Climbable") {
 			canClimb = true;
-
+			Debug.Log("Should Climb");
 		}
 	}
 

@@ -14,7 +14,7 @@ public class earthSwitch : MonoBehaviour {
        
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerStay2D(Collider2D other)
     {
         Debug.Log("earthSwitch Collide with " + other.gameObject.name);
         foreach(earthPlatform platform in platforms)
@@ -22,4 +22,5 @@ public class earthSwitch : MonoBehaviour {
             platform.switchPressed = true;
         }
     }
+    
 }

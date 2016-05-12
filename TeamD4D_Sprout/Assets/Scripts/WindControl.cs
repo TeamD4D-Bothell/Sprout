@@ -17,6 +17,8 @@ public class WindControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        //remove any null items from the list
+        myList.RemoveAll(obj => obj == null);
         // update all the objects in the list
         foreach (GameObject g in myList)
         {
@@ -28,10 +30,7 @@ public class WindControl : MonoBehaviour {
     //Methods to add and remove items from the windControll's list
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.name == ("Player") || other.gameObject.name == ("VineSeed"))
-        {
-            myList.Add(other.gameObject);
-        }
+        myList.Add(other.gameObject);
     }
     void OnTriggerExit2D(Collider2D other)
     {
