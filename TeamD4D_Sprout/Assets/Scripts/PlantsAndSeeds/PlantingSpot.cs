@@ -111,6 +111,7 @@ public class PlantingSpot : MonoBehaviour {
         {
             GameObject obj = (GameObject)Instantiate(mySprout);
             obj.transform.position = transform.position;
+            obj.transform.SetParent(transform.parent, true);
 
             //set occupied to true so that multiple seeds cannot plant in the same spot.
             occupied = true;
@@ -131,6 +132,7 @@ public class PlantingSpot : MonoBehaviour {
         {
             GameObject obj = (GameObject)Instantiate(Resources.Load("Prefabs/Tree"));
             obj.transform.position = transform.position;
+            obj.transform.SetParent(transform.parent, true);
 
             //set occupied to true so that multiple seeds cannot plant in the same spot.
             //may be redundant if sprout was planted first
@@ -147,6 +149,7 @@ public class PlantingSpot : MonoBehaviour {
         {
             GameObject obj = (GameObject)Instantiate(myPlant);
             obj.transform.position = transform.position;
+            obj.transform.SetParent(transform.parent, true);
 
             //set occupied to true so that multiple seeds cannot plant in the same spot.
             occupied = true;

@@ -5,6 +5,7 @@ public class WorldVitalityManager : MonoBehaviour {
 
 	private bool living;
 	private LifeCycle[] region;
+	private PlantingSpot[] plantingSpots;
 
 	public bool debug = false;
 	public bool Living {
@@ -13,11 +14,6 @@ public class WorldVitalityManager : MonoBehaviour {
 			living = value;
 			setAlive(value);
 		}
-	}
-
-	// Use this for initialization
-	void Start () {
-		region = GetComponentsInChildren<LifeCycle>();
 	}
 
 	void Update() {
@@ -30,6 +26,7 @@ public class WorldVitalityManager : MonoBehaviour {
 	}
 	
 	public void setAlive(bool val) {
+		region = GetComponentsInChildren<LifeCycle>();
 		foreach (LifeCycle script in region) {
 			script.living = val;
 		}
