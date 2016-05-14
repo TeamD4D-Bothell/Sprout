@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class WorldVitalityManager : MonoBehaviour {
+public class RegionVitalityManager : MonoBehaviour {
+
+	public int GoldenPlantsNeeded;
+	private int goldenPlants;
 
 	private bool living;
 	private LifeCycle[] region;
@@ -15,20 +18,18 @@ public class WorldVitalityManager : MonoBehaviour {
 			setAlive(value);
 		}
 	}
-
-	void Update() {
-		if (debug) {
-			if (Input.GetKeyDown(KeyCode.Alpha1))
-				setAlive(true);
-			else if (Input.GetKeyDown(KeyCode.Alpha2))
-				setAlive(false);
-		}
-	}
 	
 	public void setAlive(bool val) {
 		region = GetComponentsInChildren<LifeCycle>();
 		foreach (LifeCycle script in region) {
 			script.living = val;
+		}
+	}
+
+	public void GoldenSeedGrown() {
+		goldenPlants++;
+		if (goldenPlants >= GoldenPlantsNeeded) {
+			Living = true;
 		}
 	}
 }

@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	private Rigidbody2D rb;
 	private BoxCollider2D boxCollider;
+	private CircleCollider2D circleCollider;
+	private int playerLayer;
+	private int envrionmentLayer;
 
 	private float slopeRatio = 1f;
 
@@ -21,10 +24,10 @@ public class PlayerMovement : MonoBehaviour {
 	public float raycastLength = 0.15f;
 	private Vector2 raycastOrigin;
 	private bool grounded = false;
-	private bool canClimb = false;
+	private bool climbing = false;
 
 	public bool isGrounded { get { return grounded; } }
-	public bool isClimbing { get { return canClimb; } }
+	public bool isClimbing { get { return climbing; } }
 
 	/***************************************************/
 
@@ -32,8 +35,12 @@ public class PlayerMovement : MonoBehaviour {
 		// Initialize necessary components
 		rb = GetComponent<Rigidbody2D>();
 		boxCollider = GetComponent<BoxCollider2D>();
+		circleCollider = GetComponent<CircleCollider2D>();
 		walkableLayers += LayerMask.GetMask("Environment", "WorldObject");
 		UpdateRaycastOrigin();
+
+		playerLayer = LayerMask.NameToLayer("Player");
+		envrionmentLayer = LayerMask.NameToLayer("Environment");
 	}
 	
 	void FixedUpdate() {
@@ -41,11 +48,11 @@ public class PlayerMovement : MonoBehaviour {
 		float hVal = Input.GetAxis("Horizontal");
 		CheckGrounded();
 
-		if (grounded || canClimb) {
+		if (grounded || climbing) {
 			Move(hVal);
 		}
 
-		if (canClimb && rb.velocity.y <= climbSpeed) {
+		if (climbing && rb.velocity.y <= climbSpeed) {
 			Climb();
 		}
 	}
@@ -53,7 +60,7 @@ public class PlayerMovement : MonoBehaviour {
 	void Update() {
 		bool jumping = Input.GetButtonDown("Jump");
 
-		if (jumping && (grounded || canClimb)) {
+		if (jumping && (grounded || climbing)) {
 			Jump();
 		}
 	}
@@ -92,24 +99,40 @@ public class PlayerMovement : MonoBehaviour {
 		return  adjustedAngle / 90f;
 	}
 
-	void OnTriggerEnter2D(Collider2D other) {
-		if (other.tag == "Climbable") {
-			canClimb = true;
-			Debug.Log("Should Climb");
+	// TRIGGER COLLISION
+	void OnTriggerStay2D(Collider2D other) {
+		if (!climbing) {
+			if (other.tag == "Climbable"
+				&& Input.GetAxis("Vertical") != 0) {
+
+				climbing = true;
+
+				ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
+				Debug.Log(climbableObject);
+				if (climbableObject.allowPassthrough)
+					Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, true);
+			} 
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
-		if (other.tag == "Climbable") {
-			canClimb = false;
+		if (other.tag == "Climbable" && climbing) {
+			climbing = false;
+
+			ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
+			Debug.Log(climbableObject);
+			if (climbableObject.allowPassthrough)
+				Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, false);
 		}
 	}
 
+	// JUMP LOGIC
 	void Jump() {
 		rb.velocity = new Vector2(rb.velocity.x, 0);
 		rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
 	}
 
+	// CLIMB LOGIC
 	void Climb() {
 		var input = Input.GetAxis("Vertical");
 

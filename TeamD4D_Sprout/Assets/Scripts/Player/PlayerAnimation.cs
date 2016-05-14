@@ -36,7 +36,6 @@ public class PlayerAnimation : MonoBehaviour {
 		if (playerMovement.isGrounded) {
 			if (input != 0f) {
 				SetState(1);
-				SetDirection(input);
 				SetWalkSpeed();
 			}
 			else {
@@ -47,6 +46,7 @@ public class PlayerAnimation : MonoBehaviour {
 			SetState(2);
 			SetYVelocity(rb.velocity.y);
 		}
+		SetDirection(input);
 	}
 
 	private void SetState(int state) {
