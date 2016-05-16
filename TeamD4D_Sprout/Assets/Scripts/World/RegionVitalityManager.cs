@@ -4,13 +4,14 @@ using System.Collections;
 public class RegionVitalityManager : MonoBehaviour {
 
 	public int GoldenPlantsNeeded;
-	private int goldenPlants;
 
+	private int goldenPlants;
 	private bool living;
 	private LifeCycle[] region;
 	private PlantingSpot[] plantingSpots;
 
-	public bool debug = false;
+	private WorldVitalityManager worldManager;
+
 	public bool Living {
 		get { return living; }
 		set {
@@ -18,11 +19,23 @@ public class RegionVitalityManager : MonoBehaviour {
 			setAlive(value);
 		}
 	}
+
+	void Start() {
+		var managerObject = GameObject.FindGameObjectWithTag("WorldManager");
+		worldManager = managerObject.GetComponent<WorldVitalityManager>();
+	}
 	
 	public void setAlive(bool val) {
 		region = GetComponentsInChildren<LifeCycle>();
 		foreach (LifeCycle script in region) {
 			script.living = val;
+		}
+
+		if (val) {
+			worldManager.AddCured();
+		}
+		else {
+			worldManager.SubtractCured();
 		}
 	}
 
