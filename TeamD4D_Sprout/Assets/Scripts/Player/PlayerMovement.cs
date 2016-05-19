@@ -22,9 +22,12 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float raycastSkin = 0.12f;
 	public float raycastLength = 0.15f;
-	private Vector2 raycastOrigin;
+	private Vector2[] rayOrigins = new Vector2[3];
+	private int numOfRays = 3;
 	private bool grounded = false;
+
 	private bool climbing = false;
+	private float climbingCenter;
 
 	public bool isGrounded { get { return grounded; } }
 	public bool isClimbing { get { return climbing; } }
@@ -37,7 +40,7 @@ public class PlayerMovement : MonoBehaviour {
 		boxCollider = GetComponent<BoxCollider2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
 		walkableLayers += LayerMask.GetMask("Environment", "WorldObject");
-		UpdateRaycastOrigin();
+		UpdateRaycastOrigins();
 
 		playerLayer = LayerMask.NameToLayer("Player");
 		envrionmentLayer = LayerMask.NameToLayer("Environment");
@@ -48,11 +51,10 @@ public class PlayerMovement : MonoBehaviour {
 		float hVal = Input.GetAxis("Horizontal");
 		CheckGrounded();
 
-		if (grounded || climbing) {
+		if (grounded && !climbing) {
 			Move(hVal);
 		}
-
-		if (climbing && rb.velocity.y <= climbSpeed) {
+		else if (climbing && rb.velocity.y <= climbSpeed) {
 			Climb();
 		}
 	}
@@ -68,15 +70,24 @@ public class PlayerMovement : MonoBehaviour {
 	/***************************************************/
 
 	void CheckGrounded() {
-		// Adjust for slope angle
-		UpdateRaycastOrigin();
-		RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down, raycastLength, walkableLayers);
+		UpdateRaycastOrigins();
 
-		if (hit) {
-			grounded = true;
-			slopeRatio = CalculateSlopeRatio(hit.normal);
+		grounded = false;
+		slopeRatio = 1f;
+
+		foreach (var origin in rayOrigins) {
+			RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, raycastLength, walkableLayers);
+			Debug.DrawLine(origin, origin + Vector2.down * raycastLength, Color.red);
+
+			if (hit) {
+				grounded = true;
+
+				var newSlope = CalculateSlopeRatio(hit.normal);
+				if (newSlope < slopeRatio) {
+					slopeRatio = newSlope;
+				}
+			}
 		}
-		else grounded = false;
 	}
 
 	void Move(float input) {
@@ -84,9 +95,14 @@ public class PlayerMovement : MonoBehaviour {
 		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
 	}
 
-	void UpdateRaycastOrigin() {
-		raycastOrigin = new Vector2((boxCollider.bounds.min.x + boxCollider.bounds.max.x) / 2,
-									boxCollider.bounds.min.y - raycastSkin);
+	void UpdateRaycastOrigins() {
+		var bounds = boxCollider.bounds;
+		for (int i = 0; i < numOfRays; i++) {
+			rayOrigins[i] = new Vector2(
+				bounds.min.x + (bounds.size.x * i / (numOfRays - 1)),
+				bounds.min.y - raycastSkin
+				);
+		}
 	}
 
 	// Might not need this, but keeping it regardless.
@@ -103,9 +119,12 @@ public class PlayerMovement : MonoBehaviour {
 	void OnTriggerStay2D(Collider2D other) {
 		if (!climbing) {
 			if (other.tag == "Climbable"
-				&& Input.GetAxis("Vertical") != 0) {
+				&& Input.GetAxis("Vertical") != 0
+				&& !Input.GetButton("Jump")) {
 
 				climbing = true;
+				rb.velocity = Vector2.zero;
+				climbingCenter = other.transform.position.x;
 
 				ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
 				Debug.Log(climbableObject);
@@ -116,7 +135,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
-		if (other.tag == "Climbable" && climbing) {
+		if (other.tag == "Climbable") {
 			climbing = false;
 
 			ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
@@ -128,12 +147,23 @@ public class PlayerMovement : MonoBehaviour {
 
 	// JUMP LOGIC
 	void Jump() {
-		rb.velocity = new Vector2(rb.velocity.x, 0);
+
+		if (climbing) {
+			climbing = false;
+		}
+
+		var input = Input.GetAxis("Horizontal");
+		rb.velocity = new Vector2(input * moveSpeed, 0);
 		rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
 	}
 
 	// CLIMB LOGIC
 	void Climb() {
+
+		rb.velocity = new Vector2(0, rb.velocity.y);
+		var centeredPos = new Vector3(climbingCenter, transform.position.y);
+		transform.position = Vector3.Lerp(transform.position, centeredPos, 0.3f);
+
 		var input = Input.GetAxis("Vertical");
 
 		if (rb.velocity.y < 0) {

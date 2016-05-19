@@ -21,15 +21,7 @@ public class PlantingSpot : MonoBehaviour {
     {
 		if (plantedAtStart && plantPrefab != null) 
 		{
-			GrowPlant();
-		}
-
-		if (golden) {
-			var prefab = Resources.Load("Prefabs/GoldenEffect");
-			var goldenEffect = Instantiate(prefab) as GameObject;
-			var childTransform = transform.GetChild(0).transform;
-			goldenEffect.transform.position = childTransform.position;
-			goldenEffect.transform.SetParent(transform, true);
+			Invoke("GrowPlant", 0.1f);
 		}
     }
 
