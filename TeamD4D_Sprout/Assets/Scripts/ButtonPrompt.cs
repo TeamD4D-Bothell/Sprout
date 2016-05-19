@@ -2,7 +2,9 @@
 using System.Collections;
 
 public class ButtonPrompt : MonoBehaviour {
-	
+
+	public string button = "UNASSIGNED";
+	public KeyCode key;
 	public float triggerValue = 6f;
 	public float fadeRate = .1f;
 
@@ -29,12 +31,22 @@ public class ButtonPrompt : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		UpdateDistance();
-		
-		if (playerDist < triggerValue) {
-			FadeIn();
+
+		if (!buttonClicked) {
+			if (playerDist < triggerValue) {
+				CheckButtonClicked();
+				FadeIn();
+			}
+			else {
+				FadeOut();
+			}
 		}
-		else {
-			FadeOut();
+	}
+
+	void CheckButtonClicked() {
+		if (Input.GetButtonUp(button) || Input.GetKeyUp(key)) {
+			buttonClicked = true;
+			gameObject.SetActive(false);
 		}
 	}
 

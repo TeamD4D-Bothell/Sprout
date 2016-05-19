@@ -5,6 +5,7 @@ public class SpawnWater : MonoBehaviour {
 
     //this controlls how long after using the water power the player must wait to use it again
     public float interval = 3;
+    public float veritcalOffset = .5f;
     private float timer;
     private GameObject myWaterBlast;
 
@@ -28,10 +29,12 @@ public class SpawnWater : MonoBehaviour {
             timer = Time.time;
             //spawn water blast
             GameObject obj = (GameObject)Instantiate(myWaterBlast);
-            obj.transform.position = this.transform.position;
-            //TODO optionally add a rigidbody to the water blast prefab, so it can have velocity
-            //then here set the velocity of the water blast to equal the players velocity for more
-            //realistic looking effect.
+            obj.transform.position = new Vector3(this.transform.position.x, 
+                this.transform.position.y + veritcalOffset, 0f);
+
+            Rigidbody2D objRB = obj.GetComponent<Rigidbody2D>() as Rigidbody2D;
+            Rigidbody2D playerRB = GetComponent<Rigidbody2D>() as Rigidbody2D;
+            objRB.velocity = playerRB.velocity;
         }
 	}
 }

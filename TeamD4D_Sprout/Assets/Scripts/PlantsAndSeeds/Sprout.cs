@@ -22,6 +22,6 @@ public class Sprout : MonoBehaviour {
 		plant.transform.SetParent(transform.parent, true);
 		plant.transform.position = transform.position;
 
-		Destroy(gameObject);
+		Destroy(this);
 	}
 }

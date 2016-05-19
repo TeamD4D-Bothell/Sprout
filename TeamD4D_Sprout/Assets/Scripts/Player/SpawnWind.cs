@@ -21,7 +21,7 @@ public class SpawnWind : MonoBehaviour {
     {
         if (myWind == null)
         {
-            this.myWind = Resources.Load("Prefabs/Player_Abiilities/WindZone") as GameObject;
+            this.myWind = Resources.Load("Prefabs/WindZone") as GameObject;
         }
         objects = new List<WindItem>();
     }

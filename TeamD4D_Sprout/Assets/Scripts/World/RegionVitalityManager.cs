@@ -3,7 +3,7 @@ using System.Collections;
 
 public class RegionVitalityManager : MonoBehaviour {
 
-	private int goldenPlantsNeeded;
+	public int GoldenPlantsNeeded;
 
 	private int goldenPlants;
 	private bool living;
@@ -22,38 +22,29 @@ public class RegionVitalityManager : MonoBehaviour {
 
 	void Start() {
 		var managerObject = GameObject.FindGameObjectWithTag("WorldManager");
-		worldManager = managerObject.GetComponent<WorldVitalityManager>();
-
-		var plantingSpots = GetComponentsInChildren<PlantingSpot>();
-		foreach (PlantingSpot plantingSpot in plantingSpots) {
-			if (plantingSpot.golden) {
-				goldenPlantsNeeded++;
-			}
-		}
-
-		Debug.Log(gameObject.name + ": " + goldenPlantsNeeded);
+		if (managerObject)
+			worldManager = managerObject.GetComponent<WorldVitalityManager>();
 	}
 	
 	public void setAlive(bool val) {
 		region = GetComponentsInChildren<LifeCycle>();
+		foreach (LifeCycle script in region) {
+			script.living = val;
+		}
 
-		if (region != null) {
-			foreach (LifeCycle script in region) {
-				script.living = val;
-			}
-
-			if (val) {
+		if (val) {
+			if (worldManager)
 				worldManager.AddCured();
-			}
-			else {
+		}
+		else {
+			if (worldManager)
 				worldManager.SubtractCured();
-			}
 		}
 	}
 
 	public void GoldenSeedGrown() {
 		goldenPlants++;
-		if (goldenPlants >= goldenPlantsNeeded) {
+		if (goldenPlants >= GoldenPlantsNeeded) {
 			Living = true;
 		}
 	}

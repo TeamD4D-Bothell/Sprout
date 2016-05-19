@@ -5,27 +5,30 @@ using System.Threading;
 
 public class earthPlatform : MonoBehaviour
 {
+    float timer;
     Vector3 startMarker;
     Vector3 endMarker;
     public float distance;
     public float speed = 1f;
     private float startTime;
     private float journeyLength;
-    public bool isMoving;
+    float resetTimer;
+    bool isMoving = false;
+    float mSpeed = 5f;
     public bool switchPressed;
-    public bool isUp;
+    bool isUp;
     public bool vertical;
     // Use this for initialization
     void Start()
     {
-        isMoving = false;
         isUp = false;
+        timer = 3f;
+        resetTimer = 3f;
         startMarker = transform.position;
+        
         if (!vertical) vertical = false;
-
         if (vertical) endMarker = new Vector3(transform.position.x, transform.position.y + distance);
         else endMarker = new Vector3(transform.position.x + distance, transform.position.y);
-
         journeyLength = Vector3.Distance(transform.position, endMarker);
         switchPressed = false;
     }
@@ -35,6 +38,7 @@ public class earthPlatform : MonoBehaviour
     {
         if ((isMoving == false) && Input.GetKeyUp(KeyCode.E) && switchPressed)
         {
+            // earthPlatform = 
             Debug.Log("EARTH!");
             isMoving = true;
             startTime = Time.time;
@@ -49,6 +53,8 @@ public class earthPlatform : MonoBehaviour
             }
             else transform.position = Vector3.Lerp(endMarker, startMarker, fracJourney);
 
+            timer -= Time.deltaTime;
+           
            if(fracJourney > .9999)
             {
                 isMoving = false;
