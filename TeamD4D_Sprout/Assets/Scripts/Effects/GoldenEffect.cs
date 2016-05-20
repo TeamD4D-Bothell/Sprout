@@ -2,17 +2,17 @@
 using System.Collections;
 
 public class GoldenEffect : MonoBehaviour {
-	
-	void Start () {
-		var prefab = Resources.Load("Prefabs/GoldenEffect");
 
-		if (prefab != null) {
-			var goldenEffect = Instantiate(prefab) as GameObject;
-			goldenEffect.transform.position = transform.position;
-			goldenEffect.transform.SetParent(transform, true);
+	public GameObject effect;
+
+	void Start () {
+		if (effect) {
+			var effectObject = Instantiate(effect) as GameObject;
+			effectObject.transform.position = transform.position;
+			effectObject.transform.SetParent(transform, true);
 		}
 		else {
-			Debug.LogError("Golden Effect prefab not found");
+			Debug.Log("Golden Effect prefab not found");
 		}
 	}
 }

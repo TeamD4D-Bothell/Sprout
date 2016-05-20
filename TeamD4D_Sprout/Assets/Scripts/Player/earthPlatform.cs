@@ -33,7 +33,7 @@ public class earthPlatform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if ((isMoving == false) && Input.GetKeyUp(KeyCode.E) && switchPressed)
+        if ((isMoving == false) && switchPressed)
         {
             Debug.Log("EARTH!");
             isMoving = true;
