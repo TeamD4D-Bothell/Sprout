@@ -11,16 +11,42 @@ public class earthSwitch : MonoBehaviour {
     }
     // Update is called once per frame
     void Update () {
-       
+
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
-        Debug.Log("earthSwitch Collide with " + other.gameObject.name);
-        foreach(earthPlatform platform in platforms)
-        {
-            platform.switchPressed = true;
+        if (allPlatformsUpOrAllPlatformsDown()) {
+            foreach (earthPlatform platform in platforms)
+            {
+                platform.switchPressed = true;
+            }
         }
     }
-    
+
+    bool allPlatformsUpOrAllPlatformsDown()
+    {
+        if (allUp() || allDown()) return true;
+        else return false;
+    }
+
+    bool allUp()
+    {
+        foreach (earthPlatform platform in platforms)
+        {
+            if (platform.isUp == true) continue;
+            return false;
+        }
+        return true;
+    }
+
+    bool allDown()
+    {
+        foreach (earthPlatform platform in platforms)
+        {
+            if (platform.isUp == false) continue;
+            return false;
+        }
+        return true;
+    }
 }

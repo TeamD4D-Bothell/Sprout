@@ -4,7 +4,7 @@ using System.Collections;
 public class ButtonPrompt : MonoBehaviour {
 
 	public float triggerValue = 6f;
-	public float fadeRate = .1f;
+	public float fadeRate = .02f;
 
 	private SpriteRenderer sRender;
 	private GameObject player;
@@ -19,6 +19,8 @@ public class ButtonPrompt : MonoBehaviour {
 		originalColor = sRender.color;
 		fullAlpha = sRender.color;
 		fullAlpha.a = 0;
+
+		sRender.color = fullAlpha;
 
 		player = GameObject.FindGameObjectWithTag("Player");
 		if (player != null) {
@@ -44,7 +46,7 @@ public class ButtonPrompt : MonoBehaviour {
 	}
 
 	void FadeIn() {
-		if (sRender.color.a < 255) {
+		if (sRender.color.a < 1) {
 			sRender.color = Color.Lerp(sRender.color, originalColor, fadeRate);
 		}
 	}

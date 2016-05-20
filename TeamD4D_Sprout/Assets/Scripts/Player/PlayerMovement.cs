@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour {
 	public float moveSpeed = 5f;
 	public float maxClimbAngle = 60f;
 	public float climbSpeed = 3f;
+	[Range(0.01f, 2f)]
+	public float airControlRatio = 0.4f;
 
 	private Rigidbody2D rb;
 	private BoxCollider2D boxCollider;
@@ -28,6 +30,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	private bool climbing = false;
 	private float climbingCenter;
+	private bool isJumpingOff = false;
+	private float jumpOffResetTime = 0.5f;
 
 	public bool isGrounded { get { return grounded; } }
 	public bool isClimbing { get { return climbing; } }
@@ -54,6 +58,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (grounded && !climbing) {
 			Move(hVal);
 		}
+		else if (!grounded && !climbing) {
+			AirMove(hVal);
+		}
 		else if (climbing && rb.velocity.y <= climbSpeed) {
 			Climb();
 		}
@@ -69,6 +76,27 @@ public class PlayerMovement : MonoBehaviour {
 
 	/***************************************************/
 
+	// Moves Player
+	void Move(float input) {
+		float scaledInput = input * moveSpeed * slopeRatio;
+		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
+	}
+
+	// Mid-air Player Movement; Ensures momentum holds
+	void AirMove(float input) {
+		float scaledInput = input * moveSpeed * slopeRatio * airControlRatio;
+
+		var x = rb.velocity.x;
+
+		if ((scaledInput < 0 && x > -moveSpeed)
+			|| (scaledInput > 0 && x < moveSpeed)) {
+
+			rb.AddForce(new Vector2(scaledInput, 0));
+		}
+	}
+
+	// Determines if player is Grounded using Raycasts
+	// And Finds the slope of that surface
 	void CheckGrounded() {
 		UpdateRaycastOrigins();
 
@@ -90,11 +118,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	void Move(float input) {
-		float scaledInput = input * moveSpeed * slopeRatio;
-		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
-	}
-
+	// Updates origin location of GroundCheck Raycasts
 	void UpdateRaycastOrigins() {
 		var bounds = boxCollider.bounds;
 		for (int i = 0; i < numOfRays; i++) {
@@ -110,6 +134,8 @@ public class PlayerMovement : MonoBehaviour {
 		return Vector3.Normalize(input * (Vector3.Cross(normal, Vector3.forward)));
 	}
 
+	// Returns a float representing the ratio of the surface being walked on
+	// Used to modify the player's speed and avoid unintentional ramp jumping
 	float CalculateSlopeRatio(Vector2 normal) {
 		float adjustedAngle = 90 - (Vector2.Angle(Vector2.up, normal));
 		return  adjustedAngle / 90f;
@@ -117,10 +143,13 @@ public class PlayerMovement : MonoBehaviour {
 
 	// TRIGGER COLLISION
 	void OnTriggerStay2D(Collider2D other) {
+
+		// While inside an "Stay" call, this full statement should only go through once
+		// per initial climb. 
 		if (!climbing) {
 			if (other.tag == "Climbable"
 				&& Input.GetAxis("Vertical") != 0
-				&& !Input.GetButton("Jump")) {
+				&& !isJumpingOff) {
 
 				climbing = true;
 				rb.velocity = Vector2.zero;
@@ -128,6 +157,8 @@ public class PlayerMovement : MonoBehaviour {
 
 				ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
 				Debug.Log(climbableObject);
+
+				// Checks if climbable Surface allows pass-through, disables ground collision if so
 				if (climbableObject.allowPassthrough)
 					Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, true);
 			} 
@@ -135,11 +166,16 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
+		
+		// When leaving a climbable object
 		if (other.tag == "Climbable") {
 			climbing = false;
 
 			ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
 			Debug.Log(climbableObject);
+
+			// Ensures player collides with geometry again after jumping off or leaving
+			// a climbable object with pass-through enabled
 			if (climbableObject.allowPassthrough)
 				Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, false);
 		}
@@ -148,8 +184,11 @@ public class PlayerMovement : MonoBehaviour {
 	// JUMP LOGIC
 	void Jump() {
 
+		// Handle Climbing bools to ensure smooth climbing experience
 		if (climbing) {
 			climbing = false;
+			isJumpingOff = true;
+			Invoke("ResetJumpOff", jumpOffResetTime);
 		}
 
 		var input = Input.GetAxis("Horizontal");
@@ -157,22 +196,20 @@ public class PlayerMovement : MonoBehaviour {
 		rb.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
 	}
 
+	void ResetJumpOff() { // Resets bool after grace period
+		// Keeps player from sticking back to tree immediately
+		isJumpingOff = false;
+	}
+
 	// CLIMB LOGIC
 	void Climb() {
 
-		rb.velocity = new Vector2(0, rb.velocity.y);
 		var centeredPos = new Vector3(climbingCenter, transform.position.y);
 		transform.position = Vector3.Lerp(transform.position, centeredPos, 0.3f);
 
 		var input = Input.GetAxis("Vertical");
-
-		if (rb.velocity.y < 0) {
-			rb.velocity = new Vector2(rb.velocity.x, 0);
-		}
-
-		if (input != 0) {
-			float scaledInput = input * climbSpeed;
-			rb.velocity = new Vector2(rb.velocity.x, scaledInput);
-		}
+		
+		float scaledInput = input * climbSpeed;
+		rb.velocity = new Vector2(0, scaledInput);
 	}
 }
