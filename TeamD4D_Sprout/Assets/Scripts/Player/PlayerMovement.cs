@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector2[] rayOrigins = new Vector2[3];
 	private int numOfRays = 3;
 	private bool grounded = false;
+	private bool passingThrough = false;
 
 	private bool climbing = false;
 	private float climbingCenter;
@@ -159,8 +160,10 @@ public class PlayerMovement : MonoBehaviour {
 				Debug.Log(climbableObject);
 
 				// Checks if climbable Surface allows pass-through, disables ground collision if so
-				if (climbableObject.allowPassthrough)
+				if (climbableObject.allowPassthrough) {
 					Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, true);
+					passingThrough = true;
+				}
 			} 
 		}
 	}
@@ -176,8 +179,10 @@ public class PlayerMovement : MonoBehaviour {
 
 			// Ensures player collides with geometry again after jumping off or leaving
 			// a climbable object with pass-through enabled
-			if (climbableObject.allowPassthrough)
+			if (climbableObject.allowPassthrough) {
 				Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, false);
+				passingThrough = false;
+			}
 		}
 	}
 
@@ -211,5 +216,15 @@ public class PlayerMovement : MonoBehaviour {
 		
 		float scaledInput = input * climbSpeed;
 		rb.velocity = new Vector2(0, scaledInput);
+
+		// These if statements are making me sad, but what works, works
+		if (input < 0
+			&& grounded
+			&& !passingThrough) {
+
+			climbing = false;
+			isJumpingOff = true;
+			Invoke("ResetJumpOff", jumpOffResetTime);
+		}
 	}
 }

@@ -14,6 +14,8 @@ public class PlantingSpot : MonoBehaviour {
 	public bool plantedAtStart = false;
 	public GameObject plantPrefab;
 
+	public GameObject plantEffect;
+
     private bool occupied = false;
 
     // Use this for initialization
@@ -56,6 +58,11 @@ public class PlantingSpot : MonoBehaviour {
 			plant.transform.SetParent(transform.parent, true);
 
 			gameObject.SetActive(false);
+
+			if (plantEffect) {
+				var effect = Instantiate(plantEffect) as GameObject;
+				effect.transform.position = transform.position;
+			}
 		}
         else
         {
