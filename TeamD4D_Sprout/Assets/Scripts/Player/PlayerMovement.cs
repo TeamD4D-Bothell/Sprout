@@ -34,8 +34,23 @@ public class PlayerMovement : MonoBehaviour {
 	private bool isJumpingOff = false;
 	private float jumpOffResetTime = 0.5f;
 
+	private bool pulling = false;
+	private Rigidbody2D pulledObject = null;
+	private float pullRayOffset;
+	private float pullRaySkin = 0.05f;
+	private LayerMask pullRayLayers;
+	private bool letGo = false;
+
+	public float pullRayLength = 0.15f;
+	[Range(0.01f, 1f)]
+	public float pullMoveRatio = 0.8f;
+
+	private bool facingLeft = true;
+
 	public bool isGrounded { get { return grounded; } }
 	public bool isClimbing { get { return climbing; } }
+	public bool isPulling { get { return pulling; } }
+	public bool FacingLeft { get { return facingLeft; } }
 
 	/***************************************************/
 
@@ -49,6 +64,13 @@ public class PlayerMovement : MonoBehaviour {
 
 		playerLayer = LayerMask.NameToLayer("Player");
 		envrionmentLayer = LayerMask.NameToLayer("Environment");
+
+		SetupPullRay();
+	}
+
+	void SetupPullRay() {
+		pullRayOffset = boxCollider.bounds.extents.x - pullRaySkin;
+		pullRayLayers += LayerMask.GetMask("WorldObject");
 	}
 	
 	void FixedUpdate() {
@@ -56,8 +78,14 @@ public class PlayerMovement : MonoBehaviour {
 		float hVal = Input.GetAxis("Horizontal");
 		CheckGrounded();
 
+		ChangeFacing(hVal);
+
 		if (grounded && !climbing) {
 			Move(hVal);
+			CheckPull();
+			if (pulling) {
+				Pull();
+			}
 		}
 		else if (!grounded && !climbing) {
 			AirMove(hVal);
@@ -80,6 +108,10 @@ public class PlayerMovement : MonoBehaviour {
 	// Moves Player
 	void Move(float input) {
 		float scaledInput = input * moveSpeed * slopeRatio;
+		if (pulling) {
+			scaledInput *= pullMoveRatio;
+		}
+
 		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
 	}
 
@@ -95,6 +127,62 @@ public class PlayerMovement : MonoBehaviour {
 			rb.AddForce(new Vector2(scaledInput, 0));
 		}
 	}
+
+	void ChangeFacing(float input) {
+		if (!pulling) {
+			if (input < 0) {
+				facingLeft = true;
+			}
+			else if (input > 0) {
+				facingLeft = false;
+			}
+		}
+	}
+
+
+	// Not Perfect, but gets the job done.
+	void CheckPull() {
+		Debug.Log("CheckingPulling");
+		var rayDirection = (facingLeft ? Vector2.left : Vector2.right);
+		var rayStart = boxCollider.bounds.center;
+		rayStart.x += (facingLeft ? -pullRayOffset : pullRayOffset);
+		var hit = Physics2D.Raycast(rayStart, rayDirection, pullRayLength, pullRayLayers);
+		Debug.DrawRay(rayStart, rayDirection, Color.red, pullRayLength, false);
+
+		// This stupid long if statement ensures that the player can hold down or tap to grab onto
+		// the seed if the player isn't pulling already and hasn't let go this frame
+		if (hit && !pulling && Input.GetButton("Use") && !letGo) {
+			Debug.Log("PULLING");
+			pulledObject = hit.rigidbody;
+
+			// Verify object has a rigidbody
+			if (pulledObject) {
+				pulling = true;
+
+				// Ensures seed doesn't slip out of player's hands immediately from pushing into it
+				pulledObject.velocity = new Vector2(0, pulledObject.velocity.y);
+				pulledObject.position = Vector2.Lerp(pulledObject.position, rayStart, 0.2f);
+			}
+		}
+		else if (pulling && (Input.GetButtonDown("Use") || !hit)) {
+			Debug.Log("ReleasingPUlling");
+			pulling = false;
+			pulledObject = null;
+			letGo = true;
+			Invoke("ResetLetGo", 0.1f);
+		}
+	}
+
+	// CheckPull sets pulled object to the reference then 'Pull' sets it's x velocity to the player's
+	void Pull() {
+		pulledObject.velocity = new Vector2(rb.velocity.x, pulledObject.velocity.y);
+	}
+
+	void ResetLetGo() {
+		letGo = false;
+	}
+
+
 
 	// Determines if player is Grounded using Raycasts
 	// And Finds the slope of that surface
@@ -142,6 +230,9 @@ public class PlayerMovement : MonoBehaviour {
 		return  adjustedAngle / 90f;
 	}
 
+
+
+
 	// TRIGGER COLLISION
 	void OnTriggerStay2D(Collider2D other) {
 
@@ -185,6 +276,9 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 	}
+
+
+
 
 	// JUMP LOGIC
 	void Jump() {

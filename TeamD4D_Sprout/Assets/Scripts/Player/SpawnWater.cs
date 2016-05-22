@@ -23,7 +23,7 @@ public class SpawnWater : MonoBehaviour {
 	void Update ()
     {
         //detect user input and check time interval
-        if (Input.GetMouseButtonDown(1) && Time.time - timer > interval)
+        if (Input.GetButtonDown("WaterPower") && Time.time - timer > interval)
         {
             //update timer
             timer = Time.time;

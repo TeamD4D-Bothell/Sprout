@@ -30,7 +30,7 @@ public class SpawnWind : MonoBehaviour {
 	void Update () {
 
         //check for mouse input
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("WindPower"))
         {
             //check if the list already contains the max number of windZones
             if (objects.Count < maxNumber)
