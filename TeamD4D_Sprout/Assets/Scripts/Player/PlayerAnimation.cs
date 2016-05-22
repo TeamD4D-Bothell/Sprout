@@ -20,6 +20,8 @@ public class PlayerAnimation : MonoBehaviour {
 		AnimFaceRightKey,
 		AnimYVelocityKey;
 
+	private int pullLayer;
+
 	void Awake() {
 		animator = GetComponent<Animator>();
 		rb = GetComponent<Rigidbody2D>();
@@ -29,14 +31,17 @@ public class PlayerAnimation : MonoBehaviour {
 		AnimWalkSpeedKey = Animator.StringToHash(AnimWalkSpeedParam);
 		AnimFaceRightKey = Animator.StringToHash(AnimFaceRightParam);
 		AnimYVelocityKey = Animator.StringToHash(AnimYVelocityParam);
+
+		pullLayer = animator.GetLayerIndex("ArmLayer");
+		animator.SetLayerWeight(pullLayer, 0f);
 	}
 
 	void Update() {
 		float input = Input.GetAxis("Horizontal");
 		if (playerMovement.isGrounded) {
+			SetPulling();
 			if (input != 0f) {
 				SetState(1);
-				SetDirection(input);
 				SetWalkSpeed();
 			}
 			else {
@@ -47,6 +52,7 @@ public class PlayerAnimation : MonoBehaviour {
 			SetState(2);
 			SetYVelocity(rb.velocity.y);
 		}
+		SetDirection(playerMovement.FacingLeft);
 	}
 
 	private void SetState(int state) {
@@ -57,14 +63,23 @@ public class PlayerAnimation : MonoBehaviour {
 		animator.SetFloat(AnimWalkSpeedKey, rb.velocity.x);
 	}
 
-	private void SetDirection(float input) {
-		if (input > 0) {
+	private void SetDirection(bool facingLeft) {
+		if (!facingLeft) {
 			animator.SetBool(AnimFaceRightKey, true);
 			transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
 		}
-		else if (input < 0) {
+		else if (facingLeft) {
 			animator.SetBool(AnimFaceRightKey, false);
 			transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+		}
+	}
+
+	private void SetPulling() {
+		if (playerMovement.isPulling) {
+			animator.SetLayerWeight(pullLayer, 1);
+		}
+		else {
+			animator.SetLayerWeight(pullLayer, 0);
 		}
 	}
 

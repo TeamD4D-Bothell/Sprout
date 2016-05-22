@@ -3,32 +3,39 @@ using System.Collections;
 
 public class WorldVitalityManager : MonoBehaviour {
 
-	private bool living;
-	private LifeCycle[] region;
-	private PlantingSpot[] plantingSpots;
+	private int totalRegions = 0;
+	public int TotalRegions { get { return totalRegions; } }
 
-	public bool debug = false;
-	public bool Living {
-		get { return living; }
-		set {
-			living = value;
-			setAlive(value);
-		}
+	private int curedRegions = 0;
+	public float PercentCured { get { return curedRegions / totalRegions; } }
+
+	private LifeCycle[] backgroundImages;
+
+	void Start() {
+		GameObject[] regions = GameObject.FindGameObjectsWithTag("Region");
+		totalRegions = regions.Length;
+
+		backgroundImages = GetComponentsInChildren<LifeCycle>();
 	}
 
-	void Update() {
-		if (debug) {
-			if (Input.GetKeyDown(KeyCode.Alpha1))
-				setAlive(true);
-			else if (Input.GetKeyDown(KeyCode.Alpha2))
-				setAlive(false);
-		}
+	public void AddCured() {
+		curedRegions++;
+		UpdateBackground();
 	}
-	
-	public void setAlive(bool val) {
-		region = GetComponentsInChildren<LifeCycle>();
-		foreach (LifeCycle script in region) {
-			script.living = val;
+
+	public void SubtractCured() {
+		curedRegions--;
+		UpdateBackground();
+	}
+
+	private void UpdateBackground() {
+		if (backgroundImages != null) {
+			foreach (LifeCycle image in backgroundImages) {
+				image.living = true;
+			}
+		}
+		else {
+			Debug.Log("No lifeCycle scripts attached to WorldVitalityManager");
 		}
 	}
 }

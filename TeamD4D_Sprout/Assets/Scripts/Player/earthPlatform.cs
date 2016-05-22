@@ -5,54 +5,56 @@ using System.Threading;
 
 public class earthPlatform : MonoBehaviour
 {
-   public float timer = .4f;
-    float resetTimer;
-    bool isMoving = false;
-    float mSpeed = 5f;
+    Vector3 startMarker;
+    Vector3 endMarker;
+    public float distance;
+    public float speed = 1f;
+    private float startTime;
+    private float journeyLength;
+    public bool isMoving;
     public bool switchPressed;
     public bool isUp;
     public bool vertical;
     // Use this for initialization
     void Start()
     {
-        resetTimer = timer;
-        switchPressed = false;
-       if(!isUp) isUp = false;
+        isMoving = false;
+        isUp = false;
+        startMarker = transform.position;
         if (!vertical) vertical = false;
+
+        if (vertical) endMarker = new Vector3(transform.position.x, transform.position.y + distance);
+        else endMarker = new Vector3(transform.position.x + distance, transform.position.y);
+
+        journeyLength = Vector3.Distance(transform.position, endMarker);
+        switchPressed = false;
     }
 
     // Update is called once per frame
     void Update()
-    {   
-        if ((isMoving == false) && Input.GetKeyUp(KeyCode.E) && switchPressed)
+    {
+        if ((isMoving == false) && switchPressed)
         {
-                // earthPlatform = 
-                Debug.Log("EARTH!");
-                isMoving = true;
+            Debug.Log("EARTH!");
+            isMoving = true;
+            startTime = Time.time;
         }
-        if(isMoving == true)
+        if (isMoving)
         {
-            timer -= Time.deltaTime;
-            if(timer > 0)
+            float distCovered = (Time.time - startTime) * speed;
+            float fracJourney = distCovered / journeyLength;
+            if (!isUp)
             {
-                if (vertical)
-                {
-                    if (isUp == false) transform.position += (mSpeed * Time.smoothDeltaTime) * transform.up;
-                    if (isUp == true) transform.position -= (mSpeed * Time.smoothDeltaTime) * transform.up;
-                }
-                else
-                {
-                    if (isUp == false) transform.position += (mSpeed * Time.smoothDeltaTime) * transform.right;
-                    if (isUp == true) transform.position -= (mSpeed * Time.smoothDeltaTime) * transform.right;
-                }
+                transform.position = Vector3.Lerp(startMarker, endMarker, fracJourney);
             }
-            else
+            else transform.position = Vector3.Lerp(endMarker, startMarker, fracJourney);
+
+           if(fracJourney > .9999)
             {
                 isMoving = false;
-                if (isUp == false) isUp = true;
-                else if (isUp == true) isUp = false;
-                timer = resetTimer;
                 switchPressed = false;
+                if (isUp) isUp = false;
+                else isUp = true;
             }
         }
     }
