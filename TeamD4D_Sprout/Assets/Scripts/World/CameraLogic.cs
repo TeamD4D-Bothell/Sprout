@@ -7,8 +7,8 @@ public class CameraLogic : MonoBehaviour {
 	public float yOffset = 2f;
 	public float xPush = 3f;
 	public float yPush = 2f;
-	[Range(0,1)]
-	public float snappiness = 0.6f;
+	[Range(1f, 10f)]
+	public float snappiness = 1f;
 
 	private Bounds cameraBounds;
 	private GameObject player;
@@ -21,7 +21,7 @@ public class CameraLogic : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag("Player");
 	}
 
-	void Update() {
+	void LateUpdate() {
 		MoveCamera();
 		ClampToBounds();
 	}
@@ -56,6 +56,6 @@ public class CameraLogic : MonoBehaviour {
 
 		newPosition += inputVector;
 
-		transform.position = Vector3.Lerp(transform.position, newPosition, snappiness);
+		transform.position = Vector3.Lerp(transform.position, newPosition, snappiness * Time.deltaTime);
 	}
 }

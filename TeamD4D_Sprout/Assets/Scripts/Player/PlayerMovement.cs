@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour {
-	
+
 	public LayerMask walkableLayers;
 
 	public float jumpHeight = 5f;
@@ -52,10 +52,11 @@ public class PlayerMovement : MonoBehaviour {
 	public bool isPulling { get { return pulling; } }
 	public bool FacingLeft { get { return facingLeft; } }
 
+    private AudioSource walkingLoop;
 	/***************************************************/
 
 	void Awake() {
-		// Initialize necessary components
+        // Initialize necessary components
 		rb = GetComponent<Rigidbody2D>();
 		boxCollider = GetComponent<BoxCollider2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
@@ -68,12 +69,18 @@ public class PlayerMovement : MonoBehaviour {
 		SetupPullRay();
 	}
 
+	public void Disable() {
+		rb.velocity = Vector2.zero;
+		this.enabled = false;
+	}
+
 	void SetupPullRay() {
 		pullRayOffset = boxCollider.bounds.extents.x - pullRaySkin;
 		pullRayLayers += LayerMask.GetMask("WorldObject");
 	}
-	
+
 	void FixedUpdate() {
+
 		// Get input
 		float hVal = Input.GetAxis("Horizontal");
 		CheckGrounded();
@@ -89,10 +96,10 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		else if (!grounded && !climbing) {
 			AirMove(hVal);
-		}
+        }
 		else if (climbing && rb.velocity.y <= climbSpeed) {
 			Climb();
-		}
+        }
 	}
 
 	void Update() {
@@ -111,7 +118,6 @@ public class PlayerMovement : MonoBehaviour {
 		if (pulling) {
 			scaledInput *= pullMoveRatio;
 		}
-
 		rb.velocity = new Vector2(scaledInput, rb.velocity.y);
 	}
 
@@ -142,17 +148,14 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Not Perfect, but gets the job done.
 	void CheckPull() {
-		Debug.Log("CheckingPulling");
 		var rayDirection = (facingLeft ? Vector2.left : Vector2.right);
 		var rayStart = boxCollider.bounds.center;
 		rayStart.x += (facingLeft ? -pullRayOffset : pullRayOffset);
 		var hit = Physics2D.Raycast(rayStart, rayDirection, pullRayLength, pullRayLayers);
-		Debug.DrawRay(rayStart, rayDirection, Color.red, pullRayLength, false);
 
 		// This stupid long if statement ensures that the player can hold down or tap to grab onto
 		// the seed if the player isn't pulling already and hasn't let go this frame
 		if (hit && !pulling && Input.GetButton("Use") && !letGo) {
-			Debug.Log("PULLING");
 			pulledObject = hit.rigidbody;
 
 			// Verify object has a rigidbody
@@ -165,7 +168,6 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 		else if (pulling && (Input.GetButtonDown("Use") || !hit)) {
-			Debug.Log("ReleasingPUlling");
 			pulling = false;
 			pulledObject = null;
 			letGo = true;
@@ -194,7 +196,6 @@ public class PlayerMovement : MonoBehaviour {
 
 		foreach (var origin in rayOrigins) {
 			RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, raycastLength, walkableLayers);
-			Debug.DrawLine(origin, origin + Vector2.down * raycastLength, Color.red);
 
 			if (hit) {
 				grounded = true;
@@ -237,7 +238,7 @@ public class PlayerMovement : MonoBehaviour {
 	void OnTriggerStay2D(Collider2D other) {
 
 		// While inside an "Stay" call, this full statement should only go through once
-		// per initial climb. 
+		// per initial climb.
 		if (!climbing) {
 			if (other.tag == "Climbable"
 				&& Input.GetAxis("Vertical") != 0
@@ -248,25 +249,23 @@ public class PlayerMovement : MonoBehaviour {
 				climbingCenter = other.transform.position.x;
 
 				ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
-				Debug.Log(climbableObject);
 
 				// Checks if climbable Surface allows pass-through, disables ground collision if so
 				if (climbableObject.allowPassthrough) {
 					Physics2D.IgnoreLayerCollision(playerLayer, envrionmentLayer, true);
 					passingThrough = true;
 				}
-			} 
+			}
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
-		
+
 		// When leaving a climbable object
 		if (other.tag == "Climbable") {
 			climbing = false;
 
 			ClimbableObject climbableObject = other.gameObject.GetComponent<ClimbableObject>();
-			Debug.Log(climbableObject);
 
 			// Ensures player collides with geometry again after jumping off or leaving
 			// a climbable object with pass-through enabled
@@ -307,7 +306,7 @@ public class PlayerMovement : MonoBehaviour {
 		transform.position = Vector3.Lerp(transform.position, centeredPos, 0.3f);
 
 		var input = Input.GetAxis("Vertical");
-		
+
 		float scaledInput = input * climbSpeed;
 		rb.velocity = new Vector2(0, scaledInput);
 

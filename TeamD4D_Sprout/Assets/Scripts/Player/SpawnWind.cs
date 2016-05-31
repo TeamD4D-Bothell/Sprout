@@ -7,6 +7,7 @@ public class SpawnWind : MonoBehaviour {
     public int maxNumber = 1;
     public float duration = 5;
 
+    private AudioClip windSound;
     //this struct will keep track of a windZone and it's associated timer
     private struct WindItem
     {
@@ -23,6 +24,10 @@ public class SpawnWind : MonoBehaviour {
         {
             this.myWind = Resources.Load("Prefabs/WindZone") as GameObject;
         }
+        if (windSound == null)
+        {
+            this.windSound = Resources.Load("Audio/Whoosh") as AudioClip;
+        }
         objects = new List<WindItem>();
     }
 
@@ -33,8 +38,18 @@ public class SpawnWind : MonoBehaviour {
         if (Input.GetButtonDown("WindPower"))
         {
             //check if the list already contains the max number of windZones
-            if (objects.Count < maxNumber)
+            if (objects.Count >= maxNumber)
             {
+                for (int w = objects.Count - 1; w >= 0; w--)
+                {
+                    Destroy(objects[w].windZone);
+                    objects.RemoveAt(w);
+                }
+            }
+            if(objects.Count < maxNumber)
+            {
+                //play audio
+                AudioSource.PlayClipAtPoint(windSound, this.transform.position, 1f);
                 //create a new wind zone and set direction to mouse location
                 GameObject obj = (GameObject)Instantiate(myWind);
                 Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f);

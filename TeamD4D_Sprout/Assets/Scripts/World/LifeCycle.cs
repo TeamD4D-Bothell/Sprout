@@ -8,13 +8,13 @@ public class LifeCycle : MonoBehaviour {
 	public Color livingColor;
 	private Color originalColor;
 
-	public float changeTime = .03f;
+	public float changeTime = 3f;
 	public bool living = false;
+
+	private float scaledChangeTime;
 
 	private SpriteRenderer sRender;
 	private Image image;
-	
-	private int changeStep = 2;
 
 	// Use this for initialization
 	void Start () {
@@ -29,6 +29,8 @@ public class LifeCycle : MonoBehaviour {
 	}
 
 	void Update() {
+		scaledChangeTime = changeTime * Time.deltaTime;
+
 		if (sRender != null) {
 			ColorChange();
 		}

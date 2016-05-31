@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class earthSwitch : MonoBehaviour {
 
@@ -10,26 +11,35 @@ public class earthSwitch : MonoBehaviour {
 	private Sprite unpressedSprite;
 	public Sprite pressedSprite;
 
-	private bool playerPresent = false;
+    public AudioClip earthSound;
+
+    private bool playerPresent = false;
 
     void Start()
     {
-		sRender = GetComponent<SpriteRenderer>();
+        sRender = GetComponent<SpriteRenderer>();
 		unpressedSprite = sRender.sprite;
     }
 
 	void Update() 
 	{
-		if (playerPresent && Input.GetButtonDown("Use")) 
+        
+        if(areMoving() && !GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().PlayOneShot(earthSound);
+        if (!areMoving() && GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().Stop();
+
+        if (playerPresent && Input.GetButtonDown("Use")) 
 		{
-			if (allPlatformsUpOrAllPlatformsDown()) 
+          
+            
+            if (allPlatformsUpOrAllPlatformsDown()) 
 			{
 				if (!areMoving()) 
 				{
-					SwitchSprite();
+                    GetComponent<AudioSource>().Stop();
+                    SwitchSprite();
 				}
-
-				foreach (earthPlatform platform in platforms) 
+                
+                foreach (earthPlatform platform in platforms) 
 				{
 					platform.switchPressed = true;
 				}
@@ -82,7 +92,7 @@ public class earthSwitch : MonoBehaviour {
 				return true;
 			}
 		}
-		return false;
+        return false;
 	}
 
 	public void SwitchSprite() 

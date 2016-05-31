@@ -5,6 +5,7 @@ using System.Threading;
 
 public class earthPlatform : MonoBehaviour
 {
+
     Vector3 startMarker;
     Vector3 endMarker;
     public float distance;
@@ -41,6 +42,7 @@ public class earthPlatform : MonoBehaviour
         }
         if (isMoving)
         {
+           
             float distCovered = (Time.time - startTime) * speed;
             float fracJourney = distCovered / journeyLength;
             if (!isUp)
@@ -49,7 +51,7 @@ public class earthPlatform : MonoBehaviour
             }
             else transform.position = Vector3.Lerp(endMarker, startMarker, fracJourney);
 
-           if(fracJourney > .9999)
+            if(fracJourney > .9999)
             {
                 isMoving = false;
                 switchPressed = false;

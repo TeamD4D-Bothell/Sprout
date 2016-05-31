@@ -15,7 +15,7 @@ public class WindControl : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
     {
         //remove any null items from the list
         myList.RemoveAll(obj => obj == null);
