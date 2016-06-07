@@ -36,7 +36,6 @@ public class earthPlatform : MonoBehaviour
     {
         if ((isMoving == false) && switchPressed)
         {
-            Debug.Log("EARTH!");
             isMoving = true;
             startTime = Time.time;
         }

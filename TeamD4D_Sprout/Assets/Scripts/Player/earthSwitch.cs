@@ -12,6 +12,7 @@ public class earthSwitch : MonoBehaviour {
 	public Sprite pressedSprite;
 
     public AudioClip earthSound;
+	private AudioSource audioSource;
 
     private bool playerPresent = false;
 
@@ -19,13 +20,14 @@ public class earthSwitch : MonoBehaviour {
     {
         sRender = GetComponent<SpriteRenderer>();
 		unpressedSprite = sRender.sprite;
+		audioSource = GetComponent<AudioSource>();
     }
 
 	void Update() 
 	{
         
-        if(areMoving() && !GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().PlayOneShot(earthSound);
-        if (!areMoving() && GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().Stop();
+        if(areMoving() && !audioSource.isPlaying) audioSource.PlayOneShot(earthSound);
+        if (!areMoving() && audioSource.isPlaying) audioSource.Stop();
 
         if (playerPresent && Input.GetButtonDown("Use")) 
 		{
