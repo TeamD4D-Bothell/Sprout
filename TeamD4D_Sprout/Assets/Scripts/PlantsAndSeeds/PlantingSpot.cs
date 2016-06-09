@@ -3,7 +3,8 @@ using System.Collections;
 
 public enum PlantType {
 	Tree,
-	Vine
+	Vine,
+	Silver
 }
 
 public class PlantingSpot : MonoBehaviour {
@@ -15,13 +16,14 @@ public class PlantingSpot : MonoBehaviour {
 	public GameObject plantPrefab;
 
 	public GameObject plantEffect;
-
     private bool occupied = false;
-
+	public bool Occupied { get { return occupied; } }
+    public AudioClip plantSound;
+    public float volume;
     // Use this for initialization
     void Start()
     {
-		if (plantedAtStart && plantPrefab != null) 
+		if (plantedAtStart && plantPrefab != null)
 		{
 			Invoke("GrowPlant", 0.1f);
 		}
@@ -40,9 +42,11 @@ public class PlantingSpot : MonoBehaviour {
 			// check the type of seed, make sure it corrisponds to this.type,
 			// if so instansiate the corrisponding plant type.
 			if (seedScript.type == type
-				&& golden == seedScript.golden) 
+				&& golden == seedScript.golden)
 			{
-				GrowPlant();
+                if (plantSound)
+                    AudioSource.PlayClipAtPoint(plantSound, this.transform.position, volume);
+                GrowPlant();
 				GameObject.Destroy(other.gameObject);
 			}
 		}
@@ -57,12 +61,13 @@ public class PlantingSpot : MonoBehaviour {
 			plant.transform.position = transform.position;
 			plant.transform.SetParent(transform.parent, true);
 
-			gameObject.SetActive(false);
+			occupied = true;
 
 			if (plantEffect) {
 				var effect = Instantiate(plantEffect) as GameObject;
 				effect.transform.position = transform.position;
 			}
+			gameObject.SetActive(false);
 		}
         else
         {

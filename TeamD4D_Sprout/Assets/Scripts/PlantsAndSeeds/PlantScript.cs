@@ -9,7 +9,6 @@ public class PlantScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		if (golden) {
-			Debug.Log("GOLDEN PLANT GROWN");
 
 			var animator = GetComponent<Animator>();
 
@@ -22,12 +21,9 @@ public class PlantScript : MonoBehaviour {
 		}
 
 		var region = GetComponentInParent<RegionVitalityManager>();
-		Debug.Log("Region in PlantScript is " + region);
 
 		if (region) {
-			Debug.Log(region.gameObject.name);
 			if (region.Living) {
-				Debug.Log("Region is alive");
 				Invoke("EnableLifeCycle", animationTime);
 			}
 		}

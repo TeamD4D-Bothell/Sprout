@@ -8,16 +8,17 @@ public class LifeCycle : MonoBehaviour {
 	public Color livingColor;
 	private Color originalColor;
 
-	public float changeTime = .03f;
+	public float changeTime = 3f;
 	public bool living = false;
+
+	private float scaledChangeTime;
 
 	private SpriteRenderer sRender;
 	private Image image;
-	
-	private int changeStep = 2;
 
 	// Use this for initialization
 	void Start () {
+		changeTime += 1f;
 		sRender = GetComponent<SpriteRenderer>();
 		if (sRender == null) {
 			image = GetComponent<Image>();
@@ -29,6 +30,8 @@ public class LifeCycle : MonoBehaviour {
 	}
 
 	void Update() {
+		scaledChangeTime = changeTime * Time.deltaTime;
+
 		if (sRender != null) {
 			ColorChange();
 		}
@@ -42,19 +45,19 @@ public class LifeCycle : MonoBehaviour {
 
 	void ColorChange() {
 		if (living && (sRender.color != livingColor)) {
-			sRender.color = Color.Lerp(sRender.color, livingColor, changeTime);
+			sRender.color = Color.Lerp(sRender.color, livingColor, scaledChangeTime);
 		}
 		else if (sRender.color != originalColor){
-			sRender.color = Color.Lerp(sRender.color, originalColor, changeTime);
+			sRender.color = Color.Lerp(sRender.color, originalColor, scaledChangeTime);
 		}
 	}
 
 	void ColorChangeImage() {
 		if (living && (image.color != livingColor)) {
-			image.color = Color.Lerp(image.color, livingColor, changeTime);
+			image.color = Color.Lerp(image.color, livingColor, scaledChangeTime);
 		}
 		else if (image.color != originalColor) {
-			image.color = Color.Lerp(image.color, originalColor, changeTime);
+			image.color = Color.Lerp(image.color, originalColor, scaledChangeTime);
 		}
 	}
 }
