@@ -1,6 +1,8 @@
 # Sprout
 Team D4D - Design Doc v0.3
+
 Arsany Azmy | Connor McGwire
+
 Michael Ritchie | Spencer Milner
 
 ---
