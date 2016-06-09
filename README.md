@@ -7,34 +7,33 @@ Michael Ritchie | Spencer Milner
 
 ## CHANGE LOG
 ### Version 0.1 – April 26, 2016
--First version of the document. Template based on link noted in “Links” section
--Removed “Mods” and replaced a few sections are based on the template in Game Design Workshop by Tracy Fullerton
+* First version of the document. Template based on link noted in “Links” section
+* Removed “Mods” and replaced a few sections are based on the template in Game Design Workshop by Tracy Fullerton
 
 ### Version 0.2 - May 4, 2016
--Document Restructured
--Some Art added
--Object section removed as information was redundant
--Sections clarified
--Added level design section
--Link to Trello Board added
+* Document Restructured
+* Some Art added
+* Object section removed as information was redundant
+* Sections clarified
+* Added level design section
+* Link to Trello Board added
 
 ### Version 0.3 - May 19, 2016
--Description amended
--’What is unique’ amended
--’Why make this game’ amended
--Deleted ‘sticky seed’ entries
+* Description amended
+* ’What is unique’ amended
+* ’Why make this game’ amended
+* Deleted ‘sticky seed’ entries
 
 ### Version 0.4 - May 26, 2016
--Tutorial updated for clarity and playability
--Jump changed to feel more fluid and fixes getting stuck bug
--Levels updated for difficulty or design
--Added a silver seed/planting spot/tree for the regions and changed it so that the golden seed is for the main hub region and the silver stuff is for each region
--Added “progress marker” rock visual in the main hub region to better indicate player goals
--Slight changes to the wind ability for easier use
--Added sound in several places including background music
--”Win Screen”
--Added a mechanic that allows you to grab the seed
--Added seed reset zones for when the player messes up or puts it in impossible to reach areas. Mostly for player convenience and error handling
+* Tutorial updated for clarity and playability
+* Jump changed to feel more fluid and fixes getting stuck bug
+* Levels updated for difficulty or design
+* Added a silver seed/planting spot/tree for the regions and changed it so that the golden seed is for the main hub region and the silver stuff is for each region
+* Added “progress marker” rock visual in the main hub region to better indicate player goals
+* Slight changes to the wind ability for easier use
+* Added sound in several places including background music
+* ”Win Screen”
+* Added seed reset zones for when the player messes up or puts it in impossible to reach areas. Mostly for player convenience and error handling
 
 ---
 
