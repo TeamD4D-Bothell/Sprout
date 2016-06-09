@@ -18,7 +18,8 @@ public class PlantingSpot : MonoBehaviour {
 	public GameObject plantEffect;
     private bool occupied = false;
 	public bool Occupied { get { return occupied; } }
-
+    public AudioClip plantSound;
+    public float volume;
     // Use this for initialization
     void Start()
     {
@@ -43,6 +44,8 @@ public class PlantingSpot : MonoBehaviour {
 			if (seedScript.type == type
 				&& golden == seedScript.golden)
 			{
+                if (plantSound)
+                    AudioSource.PlayClipAtPoint(plantSound, this.transform.position, volume);
                 GrowPlant();
 				GameObject.Destroy(other.gameObject);
 			}

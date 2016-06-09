@@ -1,10 +1,13 @@
 fileFormatVersion: 2
 guid: a8db8f824771b2440a3426c7d27ceb6e
-timeCreated: 1462422720
+timeCreated: 1465329023
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - plantPrefab: {instanceID: 0}
+  - plantEffect: {instanceID: 0}
+  - plantSound: {fileID: 8300000, guid: b83ae24da13aaf04182bf946c657114b, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
