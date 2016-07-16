@@ -1,65 +1,60 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
+[AddComponentMenu("Sprout/RegionScripts/Region Vitality Manager")]
 public class RegionVitalityManager : MonoBehaviour {
 
-	private int goldenPlantsNeeded;
+	// Event to tell other Unity objects when the region has revived
+	public UnityEvent onRegionRevive;
 
+	private int goldenPlantsNeeded;
 	private int goldenPlants;
 	private bool living;
-	private LifeCycle[] region;
-	private PlantingSpot[] plantingSpots;
-
-	private WorldVitalityManager worldManager;
 
 	public bool Living {
 		get { return living; }
-		set {
-			living = value;
-			setAlive(value);
-		}
 	}
 
-	void Start() {
-		var managerObject = GameObject.FindGameObjectWithTag("WorldManager");
-		if (managerObject)
-			worldManager = managerObject.GetComponent<WorldVitalityManager>();
-		else
-			Debug.Log("No WorldManager object");
+	private WorldVitalityManager worldManager;
 
+	void Start() {
+		// Find the world manager
+		var managerObject = GameObject.FindGameObjectWithTag("WorldManager");
+		if (managerObject) {
+			worldManager = managerObject.GetComponent<WorldVitalityManager>();
+		}
+		else {
+			Debug.Log("No WorldManager object");
+		}
+
+		// Count the number of golden planting spots in the region
 		var plantingSpots = GetComponentsInChildren<PlantingSpot>();
 		foreach (PlantingSpot plantingSpot in plantingSpots) {
 			if (plantingSpot.golden) {
 				goldenPlantsNeeded++;
 			}
 		}
-
-		Debug.Log(gameObject.name + ": " + goldenPlantsNeeded);
 	}
 	
-	public void setAlive(bool val) {
-		region = GetComponentsInChildren<LifeCycle>();
-
-		if (region != null) {
-			foreach (LifeCycle script in region) {
-				script.living = val;
-			}
-
-			if (val) {
-				if (worldManager)
-					worldManager.AddCured();
-			}
-			else {
-				if (worldManager)
-					worldManager.SubtractCured();
-			}
+	// Sets region to a living state;
+	public void setAlive() {
+		onRegionRevive.Invoke();
+		living = true;
+		
+		if(worldManager) {
+			worldManager.AddCured();
 		}
 	}
 
+	// Add to count of grown, golden plants;
+	// Initiate revival if count maximum reached
 	public void GoldenSeedGrown() {
-		goldenPlants++;
-		if (goldenPlants >= goldenPlantsNeeded) {
-			Living = true;
+		if (!living) {
+			goldenPlants++;
+			if (goldenPlants >= goldenPlantsNeeded) {
+				setAlive();
+			}
 		}
 	}
 }

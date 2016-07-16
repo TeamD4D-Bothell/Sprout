@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// TODO: REPLACE WITH GENERIC ANIMATED PLANT SCRIPT
 public class AnimatedTree : MonoBehaviour {
-
+	// Variable for controlling when the player can start climbing
+	// the animated object
 	[Range(0.01f, 1f)]
 	public float climbStartRatio = 0.3f;
 
@@ -10,7 +12,6 @@ public class AnimatedTree : MonoBehaviour {
 	private Animator animator;
 	private PlantScript plantScript;
 
-	// Use this for initialization
 	void Start () {
 		box = GetComponent<BoxCollider2D>();
 		animator = GetComponentInChildren<Animator>();

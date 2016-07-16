@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// Used to match planting spots to seeds
 public enum PlantType {
 	Tree,
 	Vine,
 	Silver
 }
 
+[AddComponentMenu("Sprout/PlantScripts/Planting Spot")]
 public class PlantingSpot : MonoBehaviour {
 
 	//public GameObject plant;

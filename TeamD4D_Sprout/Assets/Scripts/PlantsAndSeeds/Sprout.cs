@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/PlantScripts/Sprout")]
 public class Sprout : MonoBehaviour {
 
 	public GameObject plantPrefab;

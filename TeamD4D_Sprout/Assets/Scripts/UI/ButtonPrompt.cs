@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/UI/Button Prompt")]
 public class ButtonPrompt : MonoBehaviour {
 
 	public float triggerValue = 6f;
@@ -9,7 +10,6 @@ public class ButtonPrompt : MonoBehaviour {
 	private SpriteRenderer sRender;
 	private GameObject player;
 	private float playerDist = 100f;
-	private bool buttonClicked = false;
 
 	private Color originalColor, fullAlpha;
 

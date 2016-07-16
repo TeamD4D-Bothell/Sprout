@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/Events/Final Level Elevator")]
 public class FinalLevelElevator : MonoBehaviour {
 
 	public string regionName;

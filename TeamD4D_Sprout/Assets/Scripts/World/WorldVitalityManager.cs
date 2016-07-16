@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/RegionScripts/World Vitality Manager")]
 public class WorldVitalityManager : MonoBehaviour {
 
 	private int totalRegions = 0;
@@ -31,7 +32,7 @@ public class WorldVitalityManager : MonoBehaviour {
 	private void UpdateBackground() {
 		if (backgroundImages != null) {
 			foreach (LifeCycle image in backgroundImages) {
-				image.living = true;
+				image.setAlive();
 			}
 		}
 		else {

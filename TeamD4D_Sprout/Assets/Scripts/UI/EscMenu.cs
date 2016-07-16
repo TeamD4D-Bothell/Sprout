@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/UI/Escape Menu")]
 public class EscMenu : MonoBehaviour {
 
 	private GameObject menu;

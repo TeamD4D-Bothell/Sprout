@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Threading;
 
+[AddComponentMenu("Sprout/AbilityScripts/Earth Platform")]
 public class earthPlatform : MonoBehaviour
 {
 

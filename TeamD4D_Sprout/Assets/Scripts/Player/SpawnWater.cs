@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/PlayerScripts/Spawn Water")]
 public class SpawnWater : MonoBehaviour {
 
     //this controlls how long after using the water power the player must wait to use it again

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/Effects/Golden Effect")]
 public class GoldenEffect : MonoBehaviour {
 
 	public GameObject effect;

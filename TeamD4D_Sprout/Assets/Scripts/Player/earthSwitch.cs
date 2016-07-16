@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 
+[AddComponentMenu("Sprout/AbilityScripts/Earth Switch")]
 public class earthSwitch : MonoBehaviour {
 
     public earthPlatform[] platforms;

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/PlantScripts/Seed Reset")]
 public class SeedReset : MonoBehaviour {
 
 	public GameObject resetEffect;

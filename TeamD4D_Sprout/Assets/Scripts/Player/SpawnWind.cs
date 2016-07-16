@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[AddComponentMenu("Sprout/PlayerScripts/Spawn Wind")]
 public class SpawnWind : MonoBehaviour {
 
     public int maxNumber = 1;

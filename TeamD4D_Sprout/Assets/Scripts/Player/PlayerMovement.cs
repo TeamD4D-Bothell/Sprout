@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/PlayerScripts/Player Movement")]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour {
@@ -260,7 +261,6 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
-
 		// When leaving a climbable object
 		if (other.tag == "Climbable") {
 			climbing = false;
@@ -275,9 +275,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 	}
-
-
-
+	
 
 	// JUMP LOGIC
 	void Jump() {

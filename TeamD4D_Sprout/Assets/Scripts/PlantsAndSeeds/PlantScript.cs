@@ -1,48 +1,52 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/PlantScripts/Plant Script")]
 public class PlantScript : MonoBehaviour {
-
+	// Whether or not plant contributes to region revival
 	public bool golden = false;
-	public float animationTime = 2f;
+	// Time until revive if no animation is present
+	public float animationTime = 1.5f;
+
+	private bool grown = false;
+	private RegionVitalityManager region;
 
 	// Use this for initialization
 	void Start () {
+		region = GetComponentInParent<RegionVitalityManager>();
+
+		// If golden, wait some time to signal
 		if (golden) {
-
-			var animator = GetComponent<Animator>();
-
-			if (!animator)
-				animator = GetComponentInChildren<Animator>();
-					if (!animator)
-						Invoke("BroadcastGrown", 1f);
-			else
-				Invoke("BroadcastGrown", animationTime);
-		}
-
-		var region = GetComponentInParent<RegionVitalityManager>();
-
-		if (region) {
-			if (region.Living) {
-				Invoke("EnableLifeCycle", animationTime);
+			// Find Animator component; May be in child
+			// Animator controls timing by default
+			var animator = GetComponentInChildren<Animator>();
+			
+			// If Animator doesn't exist, invoke on manual animation time
+			if (!animator) {
+				Invoke("SignalGrown", animationTime);
 			}
 		}
 	}
 
-	void BroadcastGrown() {
-		SendMessageUpwards("GoldenSeedGrown");
+	// Tell the region manager that the plant has been grown
+	public void SignalGrown() {
+		if (!grown) {
+			if (golden) {
+				region.GoldenSeedGrown();
+			}
+			CheckRegionLiving();
+			grown = true;
+		}
 	}
 
-	void EnableLifeCycle() {
-		var lifeCycle = GetComponent<LifeCycle>();
-		if (lifeCycle) {
-			lifeCycle.living = true;
-		}
-
-		var childLifeCycles = GetComponentsInChildren<LifeCycle>();
-		if (childLifeCycles.Length > 0) {
-			foreach (LifeCycle lifecycle in childLifeCycles) {
-				lifecycle.living = true;
+	// Called on growth to check if region is already alive
+	public void CheckRegionLiving() {
+		// Finds all "LifeCycle" components attached to this plant
+		// Then sets them to living
+		var lifeCycles = GetComponentsInChildren<LifeCycle>();
+		if (lifeCycles.Length > 0 && region.Living) {
+			foreach (LifeCycle lifeCycle in lifeCycles) {
+				lifeCycle.setAlive();
 			}
 		}
 	}

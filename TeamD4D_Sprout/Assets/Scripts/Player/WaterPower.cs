@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Sprout/AbilityScripts/Water Power")]
 public class WaterPower : MonoBehaviour {
     private float timer;
     //this property dictates how long the particle spawner will persist after instansiation
