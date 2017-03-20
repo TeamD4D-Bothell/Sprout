@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Component to fade objects in and out visually as the player
+	approaches or leaves.
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class ButtonPrompt : MonoBehaviour {
@@ -27,11 +33,11 @@ public class ButtonPrompt : MonoBehaviour {
 			UpdateDistance();
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		UpdateDistance();
-		
+
 		if (playerDist < triggerValue) {
 			FadeIn();
 		}

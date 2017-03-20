@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Visual effect controller for golden seeds
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class GoldenEffect : MonoBehaviour {

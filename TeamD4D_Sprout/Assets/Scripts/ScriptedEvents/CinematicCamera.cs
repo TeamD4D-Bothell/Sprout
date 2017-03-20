@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - June 2016
+	Post "release" experiment that didn't pan out initially
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class CinematicCamera : StateMachineBehaviour {

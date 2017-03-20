@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - June 2016
+	Post "release" experiment that didn't pan out initially
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class CinematicCameraTrigger : MonoBehaviour {
@@ -29,7 +34,7 @@ public class CinematicCameraTrigger : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag("Player");
 		playerMovement = player.GetComponent<PlayerMovement>();
 	}
-	
+
 	void OnTriggerEnter2D(Collider2D other) {
 		if(state == CameraState.waiting) {
 			state = CameraState.setup;
@@ -44,7 +49,7 @@ public class CinematicCameraTrigger : MonoBehaviour {
 			mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position,
 				cinematicCamera.transform.position, 0.6f * Time.deltaTime);
 
-			var distance = Vector2.Distance(mainCamera.transform.position, 
+			var distance = Vector2.Distance(mainCamera.transform.position,
 				cinematicCamera.transform.position);
 
 			if (distance < 0.1f) {

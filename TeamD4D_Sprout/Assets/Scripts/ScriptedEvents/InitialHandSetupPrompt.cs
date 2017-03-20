@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Controls display of starting controls reference
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class InitialHandSetupPrompt : MonoBehaviour {
@@ -24,7 +29,7 @@ public class InitialHandSetupPrompt : MonoBehaviour {
 	void Disable () {
 		visible = false;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (visible) {

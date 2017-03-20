@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - June 2016
+	Hooks carving graphics into the region vitality system
+ */
+
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(SpriteRenderer))]

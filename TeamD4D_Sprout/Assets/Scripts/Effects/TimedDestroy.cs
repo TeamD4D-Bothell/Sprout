@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Sets an object to die after some amount of time
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class TimedDestroy : MonoBehaviour {
@@ -9,7 +14,7 @@ public class TimedDestroy : MonoBehaviour {
 	void Start () {
 		Invoke("Finido", timeUntilDestruction);
 	}
-	
+
 	void Finido() {
 		Destroy(gameObject);
 	}

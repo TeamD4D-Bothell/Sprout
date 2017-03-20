@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Player Animation Component
+	Examines public parameters of PlayerMovement component
+	and updates Animator accordingly
+ */
+
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Animator))]
@@ -10,13 +17,13 @@ public class PlayerAnimation : MonoBehaviour {
 	private Rigidbody2D rb;
 	private PlayerMovement playerMovement;
 
-	public string AnimStateParam = "State", 
-		AnimWalkSpeedParam = "WalkSpeed", 
+	public string AnimStateParam = "State",
+		AnimWalkSpeedParam = "WalkSpeed",
 		AnimFaceRightParam = "FaceRight",
 		AnimYVelocityParam = "YVelocity";
 
-	private int AnimStateKey, 
-		AnimWalkSpeedKey, 
+	private int AnimStateKey,
+		AnimWalkSpeedKey,
 		AnimFaceRightKey,
 		AnimYVelocityKey;
 

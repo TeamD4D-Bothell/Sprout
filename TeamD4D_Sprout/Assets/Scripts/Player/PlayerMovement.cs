@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Player Movement Component
+	Captures input to move player
+ */
+
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]

@@ -1,8 +1,13 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Seed reset mechanic. In case certain seeds are pushed out of bounds.
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class SeedReset : MonoBehaviour {
-
+	// Optional game object with particle effect to spawn
 	public GameObject resetEffect;
 
 	private Vector3 initialPos;
@@ -13,7 +18,7 @@ public class SeedReset : MonoBehaviour {
 		initialPos = transform.position;
 		rb = GetComponent<Rigidbody2D>();
 	}
-	
+
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.tag == "Reset") {
 			if (resetEffect) {

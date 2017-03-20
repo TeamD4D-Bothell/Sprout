@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Control component for tree animation
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class AnimatedTree : MonoBehaviour {
@@ -16,11 +21,11 @@ public class AnimatedTree : MonoBehaviour {
 		animator = GetComponentInChildren<Animator>();
 
 		box.enabled = false;
-		
+
 		var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		Invoke("EnableClimb", stateInfo.length * climbStartRatio);
 	}
-	
+
 	void EnableClimb() {
 		box.enabled = true;
 	}

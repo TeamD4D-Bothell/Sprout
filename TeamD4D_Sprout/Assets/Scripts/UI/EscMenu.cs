@@ -1,11 +1,16 @@
-﻿using UnityEngine;
+﻿/*
+	Connor McGwire - May 2016
+	Script for options menu
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class EscMenu : MonoBehaviour {
 
 	private GameObject menu;
 	private float initialTimeScale;
-	
+
 	void Awake() {
 		var menuRect = GetComponentInChildren<RectTransform>(true);
 		menu = menuRect.gameObject;
